@@ -1,10 +1,10 @@
 local module = {}
 
-local DataStoreService = require("DataStoreService")
+local DataStoreService = game:GetService("DataStoreService")
 
 local ColdPlayerMemory = DataStoreService:GetDataStore("__VAULT__DATASTORE")
 
-function module:GetAsync(this,player)
+function module:GetAsync(player)
 	local getData = {}
 	local getSuccess, getError = pcall(function()
 		getData = ColdPlayerMemory:GetAsync(player.UserId)
@@ -12,11 +12,11 @@ function module:GetAsync(this,player)
 	if getSuccess then
 		return getData
 	else
-		return getError, getSuccess
+		return getError, not getSuccess
 	end
 end
 
-function module:SetAsync(this,player,value)
+function module:SetAsync(player,value)
 	local getData = {}
 	local getSuccess, getError = pcall(function()
 		getData = ColdPlayerMemory:SetAsync(player.UserId,value)
@@ -24,7 +24,7 @@ function module:SetAsync(this,player,value)
 	if getSuccess then
 		return getData
 	else
-		return getError, getSuccess
+		return getError, not getSuccess
 	end
 end
 

@@ -1,12 +1,12 @@
 local module = {}
 
-local MemoryStoreService = require("MemoryStoreService")
+local MemoryStoreService = game:GetService("MemoryStoreService")
 
 local ActivePlayerMemory = MemoryStoreService:GetSortedMap("__VAULT__MEMORYSTORE")
 
 local MAXTIME = 3888000
 
-function module:GetAsync(this,player)
+function module:GetAsync(player)
 	local getData = {}
 	local getSuccess, getError = pcall(function()
 		getData = ActivePlayerMemory:GetAsync(player.UserId)
@@ -14,11 +14,11 @@ function module:GetAsync(this,player)
 	if getSuccess then
 		return getData
 	else
-		return getError, getSuccess
+		return getError, not getSuccess
 	end
 end
 
-function module:SetAsync(this,player,value)
+function module:SetAsync(player,value)
 	local getData = {}
 	local getSuccess, getError = pcall(function()
 		getData = ActivePlayerMemory:SetAsync(player.UserId,value,MAXTIME)
@@ -26,7 +26,7 @@ function module:SetAsync(this,player,value)
 	if getSuccess then
 		return getData
 	else
-		return getError, getSuccess
+		return getError, not getSuccess
 	end
 end
 
