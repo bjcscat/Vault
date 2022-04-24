@@ -30,7 +30,7 @@ function TradePets(player1, player2, pet) -- player1 and player2 are data wrappe
     Player2Transaction.Pets[pet] = Player1Transaction.Pets[pet] --move player1s pet into player 2
     Player1Transaction.Pets[pet] = nil --delete player1s pet
 
-	task.desynchronize() -- Even more security in using parallel lua
+    task.desynchronize() -- Even more security in using parallel lua
 
     Player1Transaction:EndTransaction()
     Player2Transaction:EndTransaction()
