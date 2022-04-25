@@ -4,28 +4,27 @@ local DataStoreService = game:GetService("DataStoreService")
 
 local ColdPlayerMemory = DataStoreService:GetDataStore("__VAULT__DATASTORE")
 
-function module:GetAsync(player)
+function module:GetAsync(player: Player): (any,boolean)
 	local getData = {}
 	local getSuccess, getError = pcall(function()
 		getData = ColdPlayerMemory:GetAsync(player.UserId)
 	end)
 	if getSuccess then
-		return getData
+		return getData, false
 	else
 		return getError, not getSuccess
 	end
 end
 
-function module:SetAsync(player,value)
+function module:SetAsync(player: Player,dataholder): (boolean)
 	local getData = {}
 	local getSuccess, getError = pcall(function()
-		getData = ColdPlayerMemory:SetAsync(player.UserId,value)
+		getData = ColdPlayerMemory:SetAsync(player.UserId,dataholder)
 	end)
-	if getSuccess then
-		return getData
-	else
-		return getError, not getSuccess
+	if not getSuccess then
+		warn("DataStore save error:",getError)
 	end
+	return getSuccess
 end
 
 return module

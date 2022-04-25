@@ -6,28 +6,24 @@ local ActivePlayerMemory = MemoryStoreService:GetSortedMap("__VAULT__MEMORYSTORE
 
 local MAXTIME = 3888000
 
-function module:GetAsync(player)
+function module:GetAsync(player: Player): (any, boolean)
 	local getData = {}
 	local getSuccess, getError = pcall(function()
 		getData = ActivePlayerMemory:GetAsync(player.UserId)
 	end)
 	if getSuccess then
-		return getData
+		return getData, false
 	else
 		return getError, not getSuccess
 	end
 end
 
-function module:SetAsync(player,value)
+function module:SetAsync(player: Player,dataholder): (boolean)
 	local getData = {}
 	local getSuccess, getError = pcall(function()
-		getData = ActivePlayerMemory:SetAsync(player.UserId,value,MAXTIME)
+		getData = ActivePlayerMemory:SetAsync(player.UserId,dataholder,MAXTIME)
 	end)
-	if getSuccess then
-		return getData
-	else
-		return getError, not getSuccess
-	end
+	return getSuccess
 end
 
 return module
