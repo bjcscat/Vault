@@ -5,6 +5,7 @@ local module = {
 }
 
 local PlayerData = require(script.Parent.PlayerData)
+local Transactions = require(script.Parent.Transactions)
 
 function module:LoadTemplate(template: {})
 	self.template = template
@@ -23,6 +24,10 @@ function module:LoadPlayer(player)
 	module.LoadedPlayers[player] = PlayerInterface
 
 	return PlayerInterface
+end
+
+function module:CreateLinkedTransaction(Players: {})
+	return Transactions:CreateLinkedTransaction(Players)
 end
 
 game.Players.PlayerRemoving:Connect(function(player)
