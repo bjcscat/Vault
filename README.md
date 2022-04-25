@@ -24,17 +24,11 @@ end)
 Hypothetical trading script using transactions:
 ```lua
 function TradePets(player1, player2, pet) -- player1 and player2 are data wrapper instances
-    local Player1Transaction = player1:BeginTransaction()
-    local Player2Transaction = player2:BeginTransaction()
+    local TradeTransaction = Vault:CreateLinkedTransaction({player1,player2})
 
-    Player2Transaction.Pets[pet] = Player1Transaction.Pets[pet] --move player1s pet into player 2
-    Player1Transaction.Pets[pet] = nil --delete player1s pet
+    TradeTransaction[player2].Pets[pet] = player1.Pets[pet] --move player1s pet into player 2
+    TradeTransaction[player1].Pets[pet] = nil --delete player1s pet
 
-    task.desynchronize() -- Even more security in using parallel lua
-
-    Player1Transaction:EndTransaction()
-    Player2Transaction:EndTransaction()
-
-    task.synchronize()
+    TradeTransaction:EndTransaction()
 end
 ```
