@@ -8,32 +8,33 @@ function Promise.new(execute)
         success = nil,
     }
 
-    NewPromise.coroutine_function = coroutine.create(function()
-        --coroutine stuff here
-        NewPromise.results = {pcall(execute),function()
-            NewPromise.success=true
-        end, function()
-            NewPromise.success=false
-        end}
+    NewPromise.coroutine_function = coroutine.create(execute)
+    
+    NewPromise.results = {coroutine.resume(NewPromise.coroutine_function,function()
+        NewPromise.success=true
+    end, function()
+        NewPromise.success=false
+    end)}
             
-        NewPromise.success = table.remove(NewPromise.results,1)
-        
-        for _,callback in pairs(NewPromise.callbacks) do
-            if callback[0] == 0 and NewPromise.success then
+    if table.remove(NewPromise.results,1) == false then
+        NewPromise.success=false
+    end
+
+    for _,callback in pairs(NewPromise.callbacks) do
+        if callback[0] == 0 and NewPromise.success then
                     
-                callback[1](unpack(NewPromise.results)) -- call with all returned values
+            callback[1](unpack(NewPromise.results)) -- call with all returned values
 
-            elseif callback[0] == 0 and not NewPromise.success then
+        elseif callback[0] == 0 and not NewPromise.success then
 
-                callback[1](NewPromise.results[1]) -- call with error
+            callback[1](NewPromise.results[1]) -- call with error
 
-            elseif callback[0] == 2 then
+        elseif callback[0] == 2 then
 
-                callback[1](NewPromise.success, unpack(NewPromise.results)) -- call with success and results
+            callback[1](NewPromise.success, unpack(NewPromise.results)) -- call with success and results
 
-            end
          end
-    end)
+    end
     
     return setmetatable({
         __index = Promise
