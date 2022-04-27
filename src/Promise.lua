@@ -9,11 +9,18 @@ function Promise.new(execute)
     }
 
     NewPromise.coroutine_function = coroutine.create(function()
-        NewPromise.results = {pcall(execute)}
+        --coroutine stuff here
+        NewPromise.results = {pcall(execute),function()
+            NewPromise.success=true
+        end, function()
+            NewPromise.success=false
+        end}
+            
         NewPromise.success = table.remove(NewPromise.results,1)
+        
         for _,callback in pairs(NewPromise.callbacks) do
             if callback[0] == 0 and NewPromise.success then
-
+                    
                 callback[1](unpack(NewPromise.results)) -- call with all returned values
 
             elseif callback[0] == 0 and not NewPromise.success then
@@ -25,7 +32,7 @@ function Promise.new(execute)
                 callback[1](NewPromise.success, unpack(NewPromise.results)) -- call with success and results
 
             end
-        end
+         end
     end)
     
     return setmetatable({
