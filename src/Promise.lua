@@ -1,4 +1,5 @@
 local Promise = {}
+Promise.__index = Promise
 
 function Promise.new(execute)
     local NewPromise = {
@@ -10,12 +11,18 @@ function Promise.new(execute)
 
     NewPromise.coroutine_function = coroutine.create(execute)
     
-    NewPromise.results = {coroutine.resume(NewPromise.coroutine_function,function()
-        NewPromise.success=true
-    end, function()
-        NewPromise.success=false
+    local tempresults = {coroutine.resume(NewPromise.coroutine_function,function(...)
+        NewPromise.success = true
+		NewPromise.results = {true,...}
+    end, function(...)
+        NewPromise.success = false
+		NewPromise.results = {false,...}
     end)}
-            
+    
+	if NewPromise.results == {} then
+		NewPromise.results = tempresults
+	end
+	
     if table.remove(NewPromise.results,1) == false then
         NewPromise.success=false
     end
@@ -27,21 +34,19 @@ function Promise.new(execute)
 
         elseif callback[0] == 0 and not NewPromise.success then
 
-            callback[1](NewPromise.results[1]) -- call with error
+            callback[1](unpack(NewPromise.results)) -- call with error
 
         elseif callback[0] == 2 then
 
-            callback[1](NewPromise.success, unpack(NewPromise.results)) -- call with success and results
+            callback[1](not NewPromise.success, unpack(NewPromise.results)) -- call with success and results
 
          end
     end
     
-    return setmetatable({
-        __index = Promise
-    })
+    return setmetatable(NewPromise,Promise)
 end
 
-function Promise:then(callback)
+function Promise:than(callback)
     if self.success == nil then
         self.callbacks[#self.callbacks+1]={0,callback}
     elseif self.success == true then
@@ -53,7 +58,7 @@ function Promise:catch(callback)
     if self.success == nil then
         self.callbacks[#self.callbacks+1]={1,callback}
     elseif self.success == false then
-        callback(self.results[1])
+        callback(unpack(self.results))
     end
 end
 
@@ -61,7 +66,7 @@ function Promise:finally(callback)
     if self.success == nil then
         self.callbacks[#self.callbacks+1]={2,callback}
     else
-        callback(self.success,unpack(self.results))
+        callback(not self.success,unpack(self.results))
     end
 end
 
