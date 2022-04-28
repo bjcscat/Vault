@@ -4,7 +4,7 @@ local MemoryStoreService = game:GetService("MemoryStoreService")
 
 local ActivePlayerMemory = MemoryStoreService:GetSortedMap("__VAULT__MEMORYSTORE")
 
-local MAXTIME = 3888000
+local MAXTIME = 86000
 
 function module:GetAsync(player: Player): (any, boolean)
 	local getData = {}
