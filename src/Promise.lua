@@ -19,13 +19,11 @@ function Promise.new(execute)
 		NewPromise.results = {false,...}
     end)}
     
-	if NewPromise.results == {} then
+	if next(NewPromise.results) == nil then
 		NewPromise.results = tempresults
 	end
 	
-    if table.remove(NewPromise.results,1) == false then
-        NewPromise.success=false
-    end
+    NewPromise.success = table.remove(NewPromise.results,1)
 
     for _,callback in pairs(NewPromise.callbacks) do
         if callback[0] == 0 and NewPromise.success then
@@ -50,8 +48,9 @@ function Promise:than(callback)
     if self.success == nil then
         self.callbacks[#self.callbacks+1]={0,callback}
     elseif self.success == true then
-        callback(unpack(NewPromise.results))
+        callback(unpack(self.results))
     end
+    return self
 end
 
 function Promise:catch(callback)
@@ -60,6 +59,7 @@ function Promise:catch(callback)
     elseif self.success == false then
         callback(unpack(self.results))
     end
+    return self
 end
 
 function Promise:finally(callback)
@@ -68,6 +68,7 @@ function Promise:finally(callback)
     else
         callback(not self.success,unpack(self.results))
     end
+    return self
 end
 
 return Promise
