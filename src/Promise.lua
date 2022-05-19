@@ -26,15 +26,15 @@ function Promise.new(execute)
     NewPromise.success = table.remove(NewPromise.results,1)
 
     for _,callback in pairs(NewPromise.callbacks) do
-        if callback[0] == 0 and NewPromise.success then
+        if callback[1] == 0 and NewPromise.success then
                     
             callback[1](unpack(NewPromise.results)) -- call with all returned values
 
-        elseif callback[0] == 0 and not NewPromise.success then
+        elseif callback[1] == 0 and not NewPromise.success then
 
             callback[1](unpack(NewPromise.results)) -- call with error
 
-        elseif callback[0] == 2 then
+        elseif callback[1] == 2 then
 
             callback[1](not NewPromise.success, unpack(NewPromise.results)) -- call with success and results
 
